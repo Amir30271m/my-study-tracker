@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10243a">
+<meta name="description" content="Personal 120-day study, activity and physical training tracker">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>121-Day Mission Tracker</title>
+<style>
+:root{--navy:#10243a;--blue:#245b8f;--teal:#168b79;--bg:#f3f6fa;--card:#fff;--text:#172638;--muted:#64748b;--line:#e4eaf1;--green:#13865e;--red:#c34b4b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{background:linear-gradient(135deg,#10243a,#245b8f);color:#fff;padding:22px 18px 20px;border-radius:0 0 22px 22px}
+.wrap{max-width:760px;margin:auto;padding:0 14px 30px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:13px;opacity:.85;letter-spacing:.08em;text-transform:uppercase}.date{font-size:13px;opacity:.85}
+h1{font-size:24px;margin:7px 0 4px}.sub{font-size:13px;opacity:.85}
+.mission{margin-top:18px;background:#ffffff18;border:1px solid #ffffff30;padding:13px;border-radius:14px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.bar{height:9px;background:#dce5ed;border-radius:99px;overflow:hidden;margin-top:9px}.fill{height:100%;background:#2bb58c;width:0;transition:width .2s}
+.tabs{display:flex;gap:7px;overflow:auto;padding:14px 0 10px;position:sticky;top:0;background:var(--bg);z-index:5}
+.tab{border:1px solid var(--line);background:#fff;color:var(--muted);padding:9px 13px;border-radius:99px;white-space:nowrap;font-weight:650}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;margin:10px 0;box-shadow:0 3px 12px #18334d08}
+h2{font-size:18px;margin:0 0 10px}h3{font-size:15px;margin:0 0 7px}
+.muted{color:var(--muted);font-size:13px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+.stat{background:#fff;border:1px solid var(--line);padding:12px;border-radius:13px}.stat b{font-size:21px;display:block}.stat span{font-size:11px;color:var(--muted)}
+.item{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}
+input[type=checkbox]{width:20px;height:20px;accent-color:var(--teal);margin:1px 0 0;flex:none}
+.item label{flex:1}.item.done label .name{text-decoration:line-through;color:#8290a0}
+.time{font-size:12px;color:var(--blue);font-weight:700;min-width:112px}.name{font-weight:650}.hint{font-size:12px;color:var(--muted);margin-top:2px}
+button,.btn{border:0;background:var(--blue);color:#fff;padding:10px 13px;border-radius:10px;font-weight:650;font-size:13px}
+button.secondary{background:#edf2f7;color:var(--navy);border:1px solid var(--line)}button.danger{background:#fff0f0;color:var(--red);border:1px solid #f2d1d1}
+input[type=text],input[type=number],input[type=date],select{width:100%;padding:11px;border:1px solid #d7e0e9;border-radius:10px;font:inherit;background:#fff;color:var(--text)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{margin:8px 0}.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.pill{font-size:11px;padding:4px 8px;border-radius:99px;background:#e9f5f1;color:#087253;font-weight:700}
+.daynav{display:flex;gap:8px;align-items:center}.daynav input{max-width:160px}
+.subject{padding:10px 0;border-bottom:1px solid var(--line)}.subject:last-child{border:0}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 5px}
+.notice{background:#fff8e8;border:1px solid #f2dfb5;padding:11px;border-radius:12px;font-size:12px;color:#76531a}
+@media(min-width:600px){header{padding:26px calc((100% - 720px)/2 + 20px)}.wrap{padding-left:20px;padding-right:20px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap">
+  <div class="top"><div class="brand">Personal preparation companion</div><div class="date" id="todayLabel"></div></div>
+  <h1>121-Day Mission Tracker</h1>
+  <div class="sub">WBPRB • Study • Bengali • Fitness • Daily Goals</div>
+  <div class="mission">
+   <div class="row"><strong id="missionDay">Day 1 of 121</strong><span id="missionPct">0% complete</span></div>
+   <div class="muted" style="color:#e1edf7">24 Nov 2026 – 24 Mar 2027</div>
+   <div class="bar"><div class="fill" id="missionFill"></div></div>
+  </div>
+ </div>
+</header>
+<main class="wrap">
+ <div class="tabs">
+  <button class="tab active" data-tab="today">Today</button>
+  <button class="tab" data-tab="routine">Routine</button>
+  <button class="tab" data-tab="study">Study Plan</button>
+  <button class="tab" data-tab="fitness">Physical</button>
+  <button class="tab" data-tab="progress">Progress & Backup</button>
+ </div>
+
+ <section class="panel active" id="today">
+  <div class="card">
+   <div class="row"><h2>Today's dashboard</h2><span class="pill" id="weekday"></span></div>
+   <div class="daynav"><div class="field" style="flex:1"><label>Select date</label><input type="date" id="datePick" min="2026-11-24" max="2027-03-24"></div><button class="secondary" id="todayBtn" style="margin-top:8px">Today</button></div>
+   <div class="stats">
+    <div class="stat"><b id="doneCount">0/8</b><span>Goals done</span></div>
+    <div class="stat"><b id="dayPercent">0%</b><span>Daily progress</span></div>
+    <div class="stat"><b id="streak">0</b><span>Active days</span></div>
+   </div>
+  </div>
+  <div class="card"><div class="row"><h2>Daily goals</h2><span class="muted">Tick when complete</span></div><div id="goalList"></div></div>
+  <div class="card">
+   <h2>Today's study focus</h2><div id="focusText" class="muted"></div>
+   <div class="notice" style="margin-top:10px">Commute audio revision is optional. If driving, keep your attention on the road and do not operate the phone.</div>
+  </div>
+ </section>
+
+ <section class="panel" id="routine">
+  <div class="card"><h2>Your daily timetable</h2><p class="muted">Based on the routine you shared. Check activities in the Today tab.</p><div id="routineList"></div></div>
+ </section>
+
+ <section class="panel" id="study">
+  <div class="card"><h2>120-day preparation phases</h2><div id="phaseList"></div></div>
+  <div class="card"><h2>Weekly subject rotation</h2><div id="rotation"></div></div>
+  <div class="card"><h2>Bengali beginner – first lesson</h2>
+   <p><b>স্বরবর্ণ (Vowels)</b></p><p>অ অা ই ঈ উ ঊ ঋ এ ঐ ও ঔ</p>
+   <p class="muted">Practice: write each letter 5 times, read aloud, then learn 5 words: আমি (मैं), জল (पानी), ভাত (भात), মাছ (मछली), বাড়ি (घर).</p>
+   <p><b>Useful sentences</b></p><p>আমি বাংলা শিখছি। – मैं बंगाली सीख रहा हूं।<br>তুমি কেমন আছো? – तुम कैसे हो?<br>আমি ভালো আছি। – मैं अच्छा हूं।</p>
+  </div>
+  <div class="card"><h2>Add a personal goal</h2><div class="field"><label>Goal name</label><input id="newGoal" type="text" placeholder="e.g. Revise 20 formulas"></div><button id="addGoal">Add goal</button><div id="customGoalList"></div></div>
+ </section>
+
+ <section class="panel" id="fitness">
+  <div class="card"><h2>Physical training log</h2><p class="muted">Record your run for the selected date.</p>
+   <div class="grid2">
+    <div class="field"><label>Distance (km)</label><input type="number" min="0" step="0.1" id="distance" placeholder="e.g. 1.5"></div>
+    <div class="field"><label>Time (minutes)</label><input type="number" min="0" step="0.1" id="runTime" placeholder="e.g. 10.5"></div>
+   </div>
+   <div class="field"><label>Workout / notes</label><input type="text" id="workoutNote" placeholder="Easy jog, intervals, strength..."></div>
+   <button id="saveRun">Save physical log</button><span id="runSaved" class="muted" style="margin-left:8px"></span>
+  </div>
+  <div class="card"><h2>16-week progression</h2><div id="fitnessPlan"></div></div>
+  <div class="notice">Start gradually. Warm up and cool down. Stop if you feel chest pain, dizziness, unusual breathlessness or sharp pain. Use the latest official recruitment notification for qualifying PET standards.</div>
+ </section>
+
+ <section class="panel" id="progress">
+  <div class="card"><h2>Progress summary</h2><div class="stats">
+   <div class="stat"><b id="totalDone">0</b><span>Goals completed</span></div>
+   <div class="stat"><b id="totalDays">0</b><span>Days with progress</span></div>
+   <div class="stat"><b id="runSessions">0</b><span>Physical logs</span></div>
+  </div><div class="bar"><div class="fill" id="overallFill"></div></div><p class="muted" id="overallText"></p></div>
+  <div class="card"><h2>Backup your data</h2><p class="muted">Your data is saved on this device/browser. Export a backup regularly, especially before changing phones or clearing browser data.</p>
+   <div class="actions"><button id="exportBtn">Export backup</button><label class="btn" for="importFile" style="cursor:pointer">Import backup</label><input id="importFile" type="file" accept="application/json" hidden></div>
+   <p class="muted" id="backupMsg"></p>
+  </div>
+  <div class="card"><h2>Reset data</h2><p class="muted">This removes saved goals, completion ticks and running logs from this browser.</p><button class="danger" id="resetBtn">Reset all app data</button></div>
+ </section>
+ <footer>121-Day Mission Tracker • Data stays in your browser on this device.</footer>
+</main>
+<script>
+const START='2026-11-24', END='2027-03-24', KEY='wbprb120_v1';
+const defaultGoals=[
+ ['Physical training','Run / exercise for 35 minutes'],
+ ['Mathematics','Solve 20 questions'],
+ ['General Knowledge','Study topic + 20 MCQ'],
+ ['Reasoning','Solve 20 questions'],
+ ['Bengali','Study for 30 minutes'],
+ ['English','Grammar / vocabulary for 20 minutes'],
+ ['Current Affairs','15 minutes audio or reading'],
+ ['Quick revision','Revise today’s mistakes for 10 minutes']
+];
+const routine=[
+ ['6:00–6:35 AM','Running / Physical exercise'],
+ ['6:35–7:25 AM','Freshen up and breakfast'],
+ ['7:30–9:00 AM','Commute – Audio GK / Current Affairs'],
+ ['9:00 AM–1:00 PM','Office'],
+ ['1:00–1:30 PM','Bengali language study'],
+ ['1:30–6:00 PM','Office'],
+ ['6:00–8:00 PM','Commute – Audio revision, where safe'],
+ ['8:00–9:00 PM','Family time and dinner'],
+ ['9:00–9:45 PM','Main subject study'],
+ ['9:45–9:55 PM','Break'],
+ ['9:55–10:40 PM','Second subject study'],
+ ['10:40–10:50 PM','Quick revision']
+];
+const rotation=[
+ ['Monday','Mathematics','General Knowledge'],['Tuesday','Reasoning','English'],['Wednesday','Mathematics','History / Geography'],
+ ['Thursday','General Science','Reasoning'],['Friday','Mathematics','General Knowledge'],['Saturday','Bengali Grammar','English'],['Sunday','Weekly Mock Test','Error analysis']
+];
+const phases=[
+ ['24 Nov – 23 Dec 2026','Foundation','Number system, fractions, percentage, ratio, average, Indian history, geography basics, reasoning basics, Bengali alphabet.'],
+ ['24 Dec 2026 – 23 Jan 2027','Core syllabus','Profit-loss, interest, time-work, time-distance, polity, West Bengal GK, economy, science, Bengali grammar.'],
+ ['24 Jan – 23 Feb 2027','Syllabus completion','Mensuration, geometry basics, computer, current affairs, English and Bengali practice, full syllabus revision.'],
+ ['24 Feb – 24 Mar 2027','Mock tests & revision','Previous-year questions, timed mocks, weak-topic revision, SI descriptive practice and physical timing.']
+];
+const fitness=[
+ ['Weeks 1–2','20 min walk + light jog','Build a safe base'],
+ ['Weeks 3–4','1–1.5 km easy jog','Build consistency'],
+ ['Weeks 5–6','1.5–2 km easy run','Improve endurance'],
+ ['Weeks 7–8','2–2.5 km easy run','Build aerobic capacity'],
+ ['Weeks 9–10','Short controlled intervals','Introduce speed gradually'],
+ ['Weeks 11–12','800 m + 1600 m practice','Practice target distances'],
+ ['Weeks 13–14','Controlled timed practice','Improve pace and recovery'],
+ ['Weeks 15–16','Occasional timed trials','Taper and assess readiness']
+];
+let state=loadState(), selected=localDate();
+function loadState(){try{return JSON.parse(localStorage.getItem(KEY))||{days:{},runs:{},custom:[]}}catch(e){return {days:{},runs:{},custom:[]}}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function localDate(){let d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function dateObj(s){return new Date(s+'T12:00:00')}
+function dayIndex(s){return Math.floor((dateObj(s)-dateObj(START))/86400000)+1}
+function dayState(s){if(!state.days[s])state.days[s]={done:[],customDone:[]};return state.days[s]}
+function activeDay(s){return s>=START&&s<=END}
+function weekday(s){return dateObj(s).toLocaleDateString('en-IN',{weekday:'long'})}
+function subjectFor(s){let i=dayIndex(s);let w=((i-1)%7);return rotation[w]||rotation[0]}
+function render(){
+ document.getElementById('todayLabel').textContent=new Date().toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+ let idx=dayIndex(selected), inRange=activeDay(selected), st=dayState(selected);
+ document.getElementById('datePick').value=selected;
+ document.getElementById('weekday').textContent=weekday(selected);
+ document.getElementById('missionDay').textContent=inRange?`Day ${idx} of 121`:'Outside mission dates';
+ let all=Object.values(state.days).reduce((n,d)=>n+(d.done?.length||0)+(d.customDone?.length||0),0);
+ let totalPossible=121*(defaultGoals.length+state.custom.length);
+ let pct=Math.min(100,Math.round(all/Math.max(1,totalPossible)*100));
+ document.getElementById('missionPct').textContent=pct+'% goals completed';
+ document.getElementById('missionFill').style.width=pct+'%';
+ let done=st.done||[];
+ document.getElementById('doneCount').textContent=`${done.length+((st.customDone||[]).length)}/${defaultGoals.length+state.custom.length}`;
+ document.getElementById('dayPercent').textContent=Math.round((done.length+(st.customDone||[]).length)/(defaultGoals.length+state.custom.length)*100)+'%';
+ document.getElementById('streak').textContent=Object.values(state.days).filter(x=>(x.done||[]).length+(x.customDone||[]).length>0).length;
+ let list=document.getElementById('goalList');list.innerHTML='';
+ [...defaultGoals,...state.custom.map(x=>[x,'Personal goal'])].forEach((g,i)=>{
+  let custom=i>=defaultGoals.length, key=custom?i-defaultGoals.length:i, checked=custom?(st.customDone||[]).includes(key):done.includes(key);
+  let div=document.createElement('div');div.className='item'+(checked?' done':'');
+  let cb=document.createElement('input');cb.type='checkbox';cb.checked=checked;cb.addEventListener('change',()=>{let arr=custom?st.customDone:st.done;if(cb.checked)arr.push(key);else {let j=arr.indexOf(key);if(j>=0)arr.splice(j,1)}save();render()});
+  let label=document.createElement('label');label.innerHTML=`<div class="name">${esc(g[0])}</div><div class="hint">${esc(g[1])}</div>`;
+  div.append(cb,label);list.append(div);
+ });
+ let r=subjectFor(selected);document.getElementById('focusText').innerHTML=`<b>${r[0]}:</b> ${r[1]} (Main subject) · ${r[2]} (Second subject)<br><span class="muted">Use the weekly rotation as a guide; follow the current phase in the Study Plan tab.</span>`;
+ document.getElementById('routineList').innerHTML=routine.map(x=>`<div class="item"><div class="time">${x[0]}</div><div><div class="name">${x[1]}</div></div></div>`).join('');
+ document.getElementById('phaseList').innerHTML=phases.map((p,i)=>`<div class="subject"><b>${p[0]} · ${p[1]}</b><div class="muted">${p[2]}</div></div>`).join('');
+ document.getElementById('rotation').innerHTML=rotation.map(x=>`<div class="subject"><b>${x[0]}</b><div class="muted">Main: ${x[1]} · Second: ${x[2]}</div></div>`).join('');
+ document.getElementById('fitnessPlan').innerHTML=fitness.map(x=>`<div class="subject"><b>${x[0]}: ${x[1]}</b><div class="muted">${x[2]}</div></div>`).join('');
+ document.getElementById('customGoalList').innerHTML=state.custom.map((x,i)=>`<div class="item"><span style="flex:1">${esc(x)}</span><button class="danger" onclick="removeGoal(${i})">Remove</button></div>`).join('');
+ let run=state.runs[selected]||{};document.getElementById('distance').value=run.distance||'';document.getElementById('runTime').value=run.time||'';document.getElementById('workoutNote').value=run.note||'';
+ let days=Object.values(state.days), total=days.reduce((n,d)=>n+(d.done?.length||0)+(d.customDone?.length||0),0), active=days.filter(d=>(d.done||[]).length+(d.customDone||[]).length>0).length;
+ document.getElementById('totalDone').textContent=total;document.getElementById('totalDays').textContent=active;document.getElementById('runSessions').textContent=Object.keys(state.runs).length;
+ document.getElementById('overallFill').style.width=Math.min(100,total/(121*(defaultGoals.length+state.custom.length))*100)+'%';
+ document.getElementById('overallText').textContent=`${total} goal completions recorded across ${active} active days.`;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function removeGoal(i){state.custom.splice(i,1);save();render()}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab))}));
+document.getElementById('datePick').addEventListener('change',e=>{selected=e.target.value||localDate();render()});
+document.getElementById('todayBtn').addEventListener('click',()=>{selected=localDate();render()});
+document.getElementById('addGoal').addEventListener('click',()=>{let v=document.getElementById('newGoal').value.trim();if(!v)return;state.custom.push(v);document.getElementById('newGoal').value='';save();render()});
+document.getElementById('saveRun').addEventListener('click',()=>{state.runs[selected]={distance:document.getElementById('distance').value,time:document.getElementById('runTime').value,note:document.getElementById('workoutNote').value};save();document.getElementById('runSaved').textContent='Saved ✓';render()});
+document.getElementById('exportBtn').addEventListener('click',()=>{let blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='study-tracker-backup.json';a.click();URL.revokeObjectURL(url);document.getElementById('backupMsg').textContent='Backup exported.'});
+document.getElementById('importFile').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;try{let x=JSON.parse(await f.text());if(!x.days||!x.runs||!x.custom)throw Error();state=x;save();render();document.getElementById('backupMsg').textContent='Backup imported.'}catch(err){document.getElementById('backupMsg').textContent='Invalid backup file.'}});
+document.getElementById('resetBtn').addEventListener('click',()=>{if(confirm('Reset all saved tracker data on this device?')){state={days:{},runs:{},custom:[]};save();render()}});
+render();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>
